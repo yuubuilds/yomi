@@ -21,6 +21,10 @@
 
 [Releases](https://github.com/yuubuilds/yomi/releases) から `yomi_setup.exe` をダウンロードして実行してください。
 
+> **Windows SmartScreen の警告が出た場合**
+> コード署名なしの個人配布ツールのため、初回実行時に警告が出ることがあります。
+> 「詳細情報」→「実行」をクリックすると続行できます。
+
 ## セットアップ（開発者向け）
 
 ### 必要なもの
