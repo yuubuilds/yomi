@@ -2,9 +2,9 @@
 
 軽量テキストビューア。一瞬で開いて、気持ちよく読める。
 
-![Welcome screen](docs/screenshot_welcome.png)
+<img src="docs/screenshot_welcome.png" width="816">
 
-![Editor](docs/screenshot_editor.png)
+<img src="docs/screenshot_editor.png" width="816">
 
 ## 特徴
 
