@@ -310,6 +310,23 @@ async function openFile(path) {
   }
 }
 
+// Fallback for WebView2: File object without .path (e.g. drag-and-drop on Windows)
+function openFileObject(file) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const bytes    = new Uint8Array(ev.target.result);
+      const encoding = detectEncoding(bytes);
+      const decoder  = ENCODINGS.find(e => e.label === encoding)?.decoder ?? 'utf-8';
+      const content  = new TextDecoder(decoder).decode(bytes);
+      openTab(file.name, content, encoding, bytes);
+      resolve();
+    };
+    reader.onerror = resolve;
+    reader.readAsArrayBuffer(file);
+  });
+}
+
 // ---- Event handlers ----
 
 btnOpen.addEventListener('click', async () => {
@@ -321,15 +338,22 @@ btnOpen.addEventListener('click', async () => {
   } catch {}
 });
 
-editorWrap.addEventListener('dragover', e => { e.preventDefault(); editorWrap.classList.add('drag-over'); });
+// Use capture phase so our handlers run before CodeMirror's drop handling
+editorWrap.addEventListener('dragover', e => {
+  e.preventDefault(); e.stopPropagation();
+  editorWrap.classList.add('drag-over');
+}, true);
 editorWrap.addEventListener('dragleave', e => {
   if (!editorWrap.contains(e.relatedTarget)) editorWrap.classList.remove('drag-over');
-});
+}, true);
 editorWrap.addEventListener('drop', async e => {
-  e.preventDefault();
+  e.preventDefault(); e.stopPropagation();
   editorWrap.classList.remove('drag-over');
-  for (const file of e.dataTransfer.files) if (file.path) await openFile(file.path);
-});
+  for (const file of Array.from(e.dataTransfer.files)) {
+    if (file.path) await openFile(file.path);
+    else           await openFileObject(file);
+  }
+}, true);
 
 btnTheme.addEventListener('click', () => {
   isDark = !isDark;
