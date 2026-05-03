@@ -8,6 +8,18 @@ import { json } from '@codemirror/lang-json'
 import { markdown } from '@codemirror/lang-markdown'
 import { css } from '@codemirror/lang-css'
 import { html } from '@codemirror/lang-html'
+import { cpp } from '@codemirror/lang-cpp'
+import { java } from '@codemirror/lang-java'
+import { xml } from '@codemirror/lang-xml'
+import { sql } from '@codemirror/lang-sql'
+import { rust } from '@codemirror/lang-rust'
+import { yaml } from '@codemirror/lang-yaml'
+import { php } from '@codemirror/lang-php'
+import { sass } from '@codemirror/lang-sass'
+import { StreamLanguage } from '@codemirror/language'
+import { shell } from '@codemirror/legacy-modes/mode/shell'
+import { go } from '@codemirror/legacy-modes/mode/go'
+import { toml } from '@codemirror/legacy-modes/mode/toml'
 
 // ---- Whitespace visualization ----
 
@@ -110,12 +122,24 @@ const statusCursor = document.getElementById('status-cursor');
 
 function getLang(filename) {
   const ext = (filename.split('.').pop() || '').toLowerCase();
+  const sh = () => StreamLanguage.define(shell);
   return ({
     js: javascript(), jsx: javascript({ jsx: true }),
     ts: javascript({ typescript: true }), tsx: javascript({ jsx: true, typescript: true }),
     py: python(), json: json(),
     md: markdown(), markdown: markdown(),
-    css: css(), html: html(), htm: html(),
+    css: css(), scss: sass(), sass: sass(),
+    html: html(), htm: html(),
+    xml: xml(), svg: xml(), xaml: xml(), plist: xml(),
+    yaml: yaml(), yml: yaml(),
+    sql: sql(),
+    c: cpp(), cpp: cpp(), h: cpp(), hpp: cpp(), cc: cpp(), cxx: cpp(),
+    java: java(),
+    rs: rust(),
+    php: php(),
+    go: StreamLanguage.define(go),
+    toml: StreamLanguage.define(toml),
+    sh: sh(), bash: sh(), zsh: sh(),
   })[ext] ?? [];
 }
 
