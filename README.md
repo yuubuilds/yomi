@@ -17,6 +17,10 @@
 - ダーク / ライトテーマ
 - ドラッグ＆ドロップでファイルを開く
 
+## インストール（Windows）
+
+[Releases](https://github.com/yuubuilds/yomi/releases) から `yomi_setup.exe` をダウンロードして実行してください。
+
 ## セットアップ（開発者向け）
 
 ### 必要なもの
