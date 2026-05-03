@@ -93,8 +93,11 @@ const editorWrap   = document.getElementById('editor-wrap');
 const welcomeEl    = document.getElementById('welcome');
 const btnOpen      = document.getElementById('btn-open');
 const btnTheme     = document.getElementById('btn-theme');
-const btnFontDown  = document.getElementById('btn-font-down');
-const btnFontUp    = document.getElementById('btn-font-up');
+const btnFontDown      = document.getElementById('btn-font-down');
+const btnFontUp        = document.getElementById('btn-font-up');
+const fontSizeSelect   = document.getElementById('font-size-select');
+const btnSave      = document.getElementById('btn-save');
+const btnSaveAs    = document.getElementById('btn-save-as');
 const btnWs        = document.getElementById('btn-ws');
 const btnSyntax    = document.getElementById('btn-syntax');
 const fontSelect   = document.getElementById('font-select');
@@ -303,22 +306,35 @@ btnTheme.addEventListener('click', () => {
   refreshAllTabs(() => [themeComp.reconfigure(isDark ? oneDark : [])]);
 });
 
-btnFontDown.addEventListener('click', () => {
-  if (fontSize <= 9) return;
-  fontSize--;
+function applyFontSize(size) {
+  fontSize = size;
+  fontSizeSelect.value = String(size);
   refreshAllTabs(() => [fontComp.reconfigure(fontTheme())]);
+}
+
+btnFontDown.addEventListener('click', () => {
+  const sizes = Array.from(fontSizeSelect.options).map(o => Number(o.value));
+  const idx = sizes.indexOf(fontSize);
+  if (idx > 0) applyFontSize(sizes[idx - 1]);
 });
 
 btnFontUp.addEventListener('click', () => {
-  if (fontSize >= 28) return;
-  fontSize++;
-  refreshAllTabs(() => [fontComp.reconfigure(fontTheme())]);
+  const sizes = Array.from(fontSizeSelect.options).map(o => Number(o.value));
+  const idx = sizes.indexOf(fontSize);
+  if (idx < sizes.length - 1) applyFontSize(sizes[idx + 1]);
+});
+
+fontSizeSelect.addEventListener('change', () => {
+  applyFontSize(Number(fontSizeSelect.value));
 });
 
 fontSelect.addEventListener('change', () => {
   fontFamily = fontSelect.value;
   refreshAllTabs(() => [fontComp.reconfigure(fontTheme())]);
 });
+
+btnSave.addEventListener('click', () => saveFile());
+btnSaveAs.addEventListener('click', () => saveFileAs());
 
 btnWs.addEventListener('click', () => {
   showWs = !showWs;
@@ -359,6 +375,78 @@ encSelect.addEventListener('change', () => {
   } catch {
     // デコード失敗時は元に戻す
     encSelect.value = tab.encoding;
+  }
+});
+
+// ---- Save ----
+async function saveFile() {
+  if (!activeTabId || !view) return;
+  const tab = tabs.find(t => t.id === activeTabId);
+  if (!tab) return;
+  try {
+    await Neutralino.filesystem.writeFile(tab.path, view.state.doc.toString());
+    tab.modified = false;
+    renderTabs();
+  } catch (e) {
+    console.error('saveFile failed:', e);
+  }
+}
+
+async function saveFileAs() {
+  if (!activeTabId || !view) return;
+  const tab = tabs.find(t => t.id === activeTabId);
+  if (!tab) return;
+  try {
+    const path = await Neutralino.os.showSaveDialog('名前を付けて保存', {
+      defaultPath: tab.name,
+      filters: [{ name: 'All files', extensions: ['*'] }],
+    });
+    if (!path) return;
+    await Neutralino.filesystem.writeFile(path, view.state.doc.toString());
+    tab.path = path;
+    tab.name = path.replace(/\\/g, '/').split('/').pop();
+    tab.modified = false;
+    statusFile.textContent = path;
+    renderTabs();
+  } catch (e) {
+    console.error('saveFileAs failed:', e);
+  }
+}
+
+// ---- Keyboard shortcuts ----
+document.addEventListener('keydown', async e => {
+  if (!e.ctrlKey || e.altKey) return;
+  switch (e.key) {
+    case 'o': case 'O':
+      e.preventDefault();
+      btnOpen.click();
+      break;
+    case 'w': case 'W':
+      e.preventDefault();
+      if (activeTabId !== null) closeTab(activeTabId);
+      break;
+    case 's': case 'S':
+      e.preventDefault();
+      if (e.shiftKey) await saveFileAs();
+      else await saveFile();
+      break;
+    case '=': case '+':
+      e.preventDefault();
+      btnFontUp.dispatchEvent(new MouseEvent('click'));
+      break;
+    case '-':
+      e.preventDefault();
+      btnFontDown.dispatchEvent(new MouseEvent('click'));
+      break;
+    case 'Tab':
+      e.preventDefault();
+      if (tabs.length < 2) break;
+      const idx = tabs.findIndex(t => t.id === activeTabId);
+      const next = e.shiftKey
+        ? tabs[(idx - 1 + tabs.length) % tabs.length]
+        : tabs[(idx + 1) % tabs.length];
+      activateTab(next.id);
+      break;
   }
 });
 

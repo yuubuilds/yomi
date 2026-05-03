@@ -12,20 +12,43 @@
       <div id="tabs"></div>
     </div>
     <div id="titlebar-actions">
+      <button id="btn-save"    title="上書き保存 (Ctrl+S)">💾</button>
+      <button id="btn-save-as" title="名前を付けて保存 (Ctrl+Shift+S)">💾+</button>
       <button id="btn-ws"     title="空白文字を表示">¶</button>
       <button id="btn-syntax" title="構文ハイライト切替" class="active">S</button>
       <button id="btn-font-down" title="文字サイズを小さく">A-</button>
       <button id="btn-font-up"   title="文字サイズを大きく">A+</button>
+      <select id="font-size-select" title="文字サイズ">
+        <option value="10">10px</option>
+        <option value="11">11px</option>
+        <option value="12">12px</option>
+        <option value="13" selected>13px</option>
+        <option value="14">14px</option>
+        <option value="15">15px</option>
+        <option value="16">16px</option>
+        <option value="18">18px</option>
+        <option value="20">20px</option>
+        <option value="24">24px</option>
+        <option value="28">28px</option>
+      </select>
       <select id="font-select" title="フォント選択">
-        <option value="'Cascadia Code', monospace">Cascadia Code</option>
-        <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
-        <option value="'Fira Code', monospace">Fira Code</option>
-        <option value="Consolas, monospace">Consolas</option>
-        <option value="'Courier New', monospace">Courier New</option>
-        <option value="'MS Gothic', monospace">MS ゴシック</option>
-        <option value="'BIZ UDGothic', monospace">BIZ UDゴシック</option>
-        <option value="'Meiryo UI', 'Meiryo', sans-serif">Meiryo UI</option>
-        <option value="'Yu Gothic', 'YuGothic', sans-serif">游ゴシック</option>
+        <optgroup label="欧文等幅">
+          <option value="'Cascadia Code', monospace">Cascadia Code</option>
+          <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+          <option value="'Fira Code', monospace">Fira Code</option>
+          <option value="Consolas, monospace">Consolas</option>
+          <option value="'Courier New', monospace">Courier New</option>
+        </optgroup>
+        <optgroup label="日本語等幅 ゴシック">
+          <option value="'MS Gothic', 'ＭＳ ゴシック', monospace">MS ゴシック</option>
+          <option value="'BIZ UDGothic', monospace">BIZ UDゴシック</option>
+          <option value="'Noto Sans JP', monospace">Noto Sans JP</option>
+        </optgroup>
+        <optgroup label="日本語等幅 明朝">
+          <option value="'MS Mincho', 'ＭＳ 明朝', serif">MS 明朝</option>
+          <option value="'BIZ UDMincho', serif">BIZ UD明朝</option>
+          <option value="'Yu Mincho', 'YuMincho', serif">游明朝</option>
+        </optgroup>
       </select>
       <button id="btn-theme" title="テーマ切り替え">🌙</button>
     </div>
