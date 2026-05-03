@@ -1,7 +1,7 @@
 import { EditorView, basicSetup } from 'codemirror'
 import { EditorState, Compartment, RangeSetBuilder } from '@codemirror/state'
 import { ViewPlugin, Decoration, WidgetType } from '@codemirror/view'
-import { oneDark } from '@codemirror/theme-one-dark'
+import { monokai } from '@uiw/codemirror-theme-monokai'
 import { javascript } from '@codemirror/lang-javascript'
 import { python } from '@codemirror/lang-python'
 import { json } from '@codemirror/lang-json'
@@ -20,6 +20,7 @@ import { StreamLanguage } from '@codemirror/language'
 import { shell } from '@codemirror/legacy-modes/mode/shell'
 import { go } from '@codemirror/legacy-modes/mode/go'
 import { toml } from '@codemirror/legacy-modes/mode/toml'
+import { powerShell as powershell } from '@codemirror/legacy-modes/mode/powershell'
 
 // ---- Whitespace visualization ----
 
@@ -122,25 +123,32 @@ const statusCursor = document.getElementById('status-cursor');
 
 function getLang(filename) {
   const ext = (filename.split('.').pop() || '').toLowerCase();
-  const sh = () => StreamLanguage.define(shell);
-  return ({
-    js: javascript(), jsx: javascript({ jsx: true }),
-    ts: javascript({ typescript: true }), tsx: javascript({ jsx: true, typescript: true }),
-    py: python(), json: json(),
-    md: markdown(), markdown: markdown(),
-    css: css(), scss: sass(), sass: sass(),
-    html: html(), htm: html(),
-    xml: xml(), svg: xml(), xaml: xml(), plist: xml(),
-    yaml: yaml(), yml: yaml(),
-    sql: sql(),
-    c: cpp(), cpp: cpp(), h: cpp(), hpp: cpp(), cc: cpp(), cxx: cpp(),
-    java: java(),
-    rs: rust(),
-    php: php(),
-    go: StreamLanguage.define(go),
-    toml: StreamLanguage.define(toml),
-    sh: sh(), bash: sh(), zsh: sh(),
-  })[ext] ?? [];
+  switch (ext) {
+    case 'js':                          return javascript();
+    case 'jsx':                         return javascript({ jsx: true });
+    case 'ts':                          return javascript({ typescript: true });
+    case 'tsx':                         return javascript({ jsx: true, typescript: true });
+    case 'py':                          return python();
+    case 'json':                        return json();
+    case 'md': case 'markdown':         return markdown();
+    case 'css':                         return css();
+    case 'scss': case 'sass':           return sass();
+    case 'html': case 'htm':            return html();
+    case 'xml': case 'svg':
+    case 'xaml': case 'plist':          return xml();
+    case 'yaml': case 'yml':            return yaml();
+    case 'sql':                         return sql();
+    case 'c': case 'cpp': case 'cc':
+    case 'cxx': case 'h': case 'hpp':   return cpp();
+    case 'java':                        return java();
+    case 'rs':                          return rust();
+    case 'php':                         return php();
+    case 'go':                          return StreamLanguage.define(go);
+    case 'toml':                        return StreamLanguage.define(toml);
+    case 'sh': case 'bash': case 'zsh': return StreamLanguage.define(shell);
+    case 'ps1':                         return StreamLanguage.define(powershell);
+    default:                            return [];
+  }
 }
 
 function fontTheme() {
@@ -154,7 +162,7 @@ function makeExtensions(filename) {
   return [
     basicSetup,
     langComp.of(showSyntax ? getLang(filename) : []),
-    themeComp.of(isDark ? oneDark : []),
+    themeComp.of(isDark ? monokai : []),
     fontComp.of(fontTheme()),
     wsComp.of(showWs ? whitespaceExt : []),
     EditorView.updateListener.of(update => {
@@ -238,7 +246,7 @@ function activateTab(id) {
   welcomeEl.style.display = 'none';
   view = new EditorView({ state: tab.state, parent: editorWrap });
   view.dispatch({ effects: [
-    themeComp.reconfigure(isDark ? oneDark : []),
+    themeComp.reconfigure(isDark ? monokai : []),
     fontComp.reconfigure(fontTheme()),
     wsComp.reconfigure(showWs ? whitespaceExt : []),
     langComp.reconfigure(showSyntax ? getLang(tab.name) : []),
@@ -327,7 +335,7 @@ btnTheme.addEventListener('click', () => {
   isDark = !isDark;
   document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
   btnTheme.textContent = isDark ? '☀' : '🌙';
-  refreshAllTabs(() => [themeComp.reconfigure(isDark ? oneDark : [])]);
+  refreshAllTabs(() => [themeComp.reconfigure(isDark ? monokai : [])]);
 });
 
 function applyFontSize(size) {
