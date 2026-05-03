@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+/bin
+/dist
+resources/js/bundle.js
+
+# Neutralinojs client (downloaded by neu update)
+resources/js/neutralino.js
+neutralino.js
+
+# Neutralinojs related files
+.storage
+.tmp/
+*.log
+.lite_workspace.lua
+
+# Compiled installer binary
+installer/yomi_setup.exe
