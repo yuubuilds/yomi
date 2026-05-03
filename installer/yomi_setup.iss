@@ -27,7 +27,7 @@ Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
 
 [Tasks]
 Name: "desktopicon";    Description: "デスクトップにショートカットを作成"; GroupDescription: "追加タスク:"; Flags: unchecked
-Name: "sendtoicon";     Description: "「送る」メニューに追加";             GroupDescription: "追加タスク:"; Flags: checked
+Name: "sendtoicon";     Description: "「送る」メニューに追加";             GroupDescription: "追加タスク:"
 Name: "quicklaunch";    Description: "スタートアップに追加（ログイン時に起動）"; GroupDescription: "追加タスク:"; Flags: unchecked
 
 [Files]
@@ -77,7 +77,7 @@ end;
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep = ssPostInstall then begin
-    if IsTaskSelected('sendtoicon') then
+    if WizardIsTaskSelected('sendtoicon') then
       CreateSendToShortcut();
   end;
 end;
