@@ -1,6 +1,12 @@
 # Dependencies
 node_modules/
 
+# Local secrets
+.env
+.env.*
+!.env.example
+secrets.toml
+
 # Build outputs
 /bin
 /dist
